@@ -1,1 +1,36 @@
+class CreditCard:
+    def __init__(self, principal, interest_rate):
+        self.principal = principal
+        self.interest_rate = interest_rate
 
+    def calculate_interest(self):
+        return self.principal * self.interest_rate
+
+    def make_payment(self, payment_amount):
+        self.principal -= payment_amount
+
+    def process_month(self):
+        interest = self.calculate_interest()
+        self.principal += interest
+
+    def get_balance(self):
+        return self.principal
+
+
+def main():
+    print("Welcome to the Credit Card Repayment System!")
+    
+    principal = float(input("Enter your credit card balance: $"))
+    interest_rate = float(input("Enter the annual interest rate (as a decimal): "))
+    
+    credit_card = CreditCard(principal, interest_rate)
+
+    while credit_card.get_balance() > 0:
+        print("\nCurrent Balance: ${:.2f}".format(credit_card.get_balance()))
+        
+        payment_amount = float(input("Enter your payment for this month: $"))
+        credit_card.make_payment(payment_amount)
+        
+        credit_card.process_month()
+
+    print("\nCongratulations! You have paid off your credit card debt.")
