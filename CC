@@ -1,36 +1,72 @@
-class CreditCard:
-    def __init__(self, principal, interest_rate):
-        self.principal = principal
-        self.interest_rate = interest_rate
+import math
 
-    def calculate_interest(self):
-        return self.principal * self.interest_rate
+def get_positive_float(prompt):
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("Please enter a positive number.")
+            else:
+                return value
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
-    def make_payment(self, payment_amount):
-        self.principal -= payment_amount
+def get_positive_integer(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+            if value <= 0:
+                print("Please enter a positive integer.")
+            else:
+                return value
+        except ValueError:
+            print("Invalid input. Please enter an integer.")
 
-    def process_month(self):
-        interest = self.calculate_interest()
-        self.principal += interest
+def calculate_monthly_payment(principal, annual_interest_rate, years):
+    monthly_interest_rate = annual_interest_rate / 12 / 100
+    num_payments = years * 12
+    return principal * (monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments) / ((1 + monthly_interest_rate) ** num_payments - 1)
 
-    def get_balance(self):
-        return self.principal
+def calculate_credit_card_repayment():
+    print("Welcome to the Credit Card Repayment Calculator!")
 
+    num_debts = get_positive_integer("Enter the number of credit card debts: ")
 
-def main():
-    print("Welcome to the Credit Card Repayment System!")
-    
-    principal = float(input("Enter your credit card balance: $"))
-    interest_rate = float(input("Enter the annual interest rate (as a decimal): "))
-    
-    credit_card = CreditCard(principal, interest_rate)
+    total_repayment = 0
 
-    while credit_card.get_balance() > 0:
-        print("\nCurrent Balance: ${:.2f}".format(credit_card.get_balance()))
-        
-        payment_amount = float(input("Enter your payment for this month: $"))
-        credit_card.make_payment(payment_amount)
-        
-        credit_card.process_month()
+    for i in range(1, num_debts + 1):
+        print(f"\nCredit Card Debt #{i}:")
+        debt = get_positive_float(f"Enter the debt amount for Card #{i}: $")
+        annual_interest_rate = get_positive_float(f"Enter the annual interest rate for Card #{i} (in %): ")
+        years = get_positive_integer(f"Enter the number of years to repay Card #{i}: ")
+
+        monthly_payment = calculate_monthly_payment(debt, annual_interest_rate, years)
+        total_repayment += monthly_payment * years * 12
+
+        print(f"\nFor Card #{i}:")
+        print(f"Monthly Payment: ${monthly_payment:.2f}")
+        print(f"Total Repayment: ${monthly_payment * years * 12:.2f}")
+
+        show_repayment_schedule(debt, annual_interest_rate, years)
+
+    print("\nTotal Repayment for All Cards: ${:.2f}".format(total_repayment))
+
+def show_repayment_schedule(principal, annual_interest_rate, years):
+    monthly_interest_rate = annual_interest_rate / 12 / 100
+    num_payments = years * 12
+
+    print("\nRepayment Schedule:")
+    print(f"{'Month':<6}{'Payment':<12}{'Principal':<12}{'Interest':<12}{'Remaining':<12}")
+
+    for month in range(1, num_payments + 1):
+        monthly_payment = calculate_monthly_payment(principal, annual_interest_rate, years)
+        monthly_interest_payment = principal * monthly_interest_rate
+        monthly_principal_payment = monthly_payment - monthly_interest_payment
+        principal -= monthly_principal_payment
+
+        print(f"{month:<6}${monthly_payment:.2f}${monthly_principal_payment:.2f}${monthly_interest_payment:.2f}${principal:.2f}")
+
+if __name__ == "__main__":
+    calculate_credit_card_repayment()
 
     print("\nCongratulations! You have paid off your credit card debt.")
